@@ -1,12 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Euchre;
 
 /**
  *
- * @author OWNER
+ * @author Michael
  */
 public class HandInfo {
     public int dealer;
@@ -27,3 +24,4 @@ public class HandInfo {
     
     
 }
+

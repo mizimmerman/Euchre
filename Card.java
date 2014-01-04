@@ -63,6 +63,12 @@ public class Card {
             return su;
     }
 
+    public void set(Card c) {
+        r = c.r;
+        s = c.s;
+        sameColor = c.sameColor;
+    }
+    
     public String toString() {
     return Card.rankNames[r.ordinal()] + " of " + Card.suitNames[s.ordinal()];
     }
@@ -70,20 +76,20 @@ public class Card {
     /**Method to check whether the current card beats rhs. Assume the 
      * current card was played first.*/
     public boolean isLessThan(Card rhs, Suit trump) {
-            if(r == Rank.JACK && s == trump)
-                    return false; /*this is right bauer*/
-            else if(rhs.r == Rank.JACK && rhs.s == trump)
-                    return true; /*rhs is right bauer*/
-            else if(r == Rank.JACK && sameColor == trump)
-                    return false; /*neither is right, this is left*/
-            else if(rhs.r == Rank.JACK && rhs.sameColor == trump)
-                    return true; /*neither is right, rhs is left*/
-            else if(s == rhs.s)
-                    return r.ordinal() < rhs.r.ordinal(); /*no bauers, same suit*/
-            else if(rhs.s == trump)
-                    return true; /*no bauers, rhs is trump, this isn't*/
-            else
-                    return false; /*assume this was played first, or is trump*/
+        if(r == Rank.JACK && s == trump)
+                return false; /*this is right bauer*/
+        else if(rhs.r == Rank.JACK && rhs.s == trump)
+                return true; /*rhs is right bauer*/
+        else if(r == Rank.JACK && sameColor == trump)
+                return false; /*neither is right, this is left*/
+        else if(rhs.r == Rank.JACK && rhs.sameColor == trump)
+                return true; /*neither is right, rhs is left*/
+        else if(s == rhs.s)
+                return r.ordinal() < rhs.r.ordinal(); /*no bauers, same suit*/
+        else if(rhs.s == trump)
+                return true; /*no bauers, rhs is trump, this isn't*/
+        else
+                return false; /*assume this was played first, or is trump*/
     }
 
     public boolean isFollowingSuit(Suit follow, Suit trump) {
@@ -100,5 +106,6 @@ public class Card {
             return false;
     }
 }
+
 
 

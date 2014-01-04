@@ -3,19 +3,16 @@ package Euchre;
 import javax.swing.JOptionPane;
 
 public class Player {
-	private Card[] hand;
-	private String name;
-	private int playerNum;
-	private int handIndex;
-        public String[] handImgFiles;
+	protected Card[] hand;
+	protected String name;
+	protected int playerNum;
+	protected int handIndex;
 	
 	public Player() {
 		handIndex = 0;
 		hand = new Card[5];
-                handImgFiles = new String[5];
                 for(int i = 0; i < 5; ++i) {
                     hand[i] = new Card();
-                    handImgFiles[i] = "NoneNone.gif";
                 }
 	}
 	
@@ -23,10 +20,8 @@ public class Player {
 		handIndex = 0;
 		name = n;
 		hand = new Card[5];
-                handImgFiles = new String[5];
                 for(int i = 0; i < 5; ++i) {
                     hand[i] = new Card();
-                    handImgFiles[i] = "NoneNone.gif";
                 }
 	}
 	
@@ -50,8 +45,6 @@ public class Player {
         hand[handIndex].r = c.r;
         hand[handIndex].s = c.s;
         hand[handIndex].sameColor = c.sameColor;
-        handImgFiles[handIndex] = Card.rankNames[c.r.ordinal()] 
-                + Card.suitNames[c.s.ordinal()] + ".gif";
         ++handIndex;
     }
 	
@@ -71,7 +64,7 @@ public class Player {
             return false;
     }
 	
-    public Card.Suit callTrump2(Card flipped) {
+    public Card.Suit callTrump2(Card flipped, boolean screwed) {
         String selection = new String();
         Card.Suit select = Card.Suit.HEARTS;
         String title = "Call trump?";
@@ -103,37 +96,37 @@ public class Player {
     }
 	
     public void pickUp(Card flipped) {
-        String selectStr = JOptionPane.showInputDialog(null, "Select a card to discard (1-5).");
-        boolean goodInput = false;
-        int selection = -1;
-        do {
-            try {
-                // attempt to convert the String to an int
-                selection = Integer.parseInt(selectStr);
-                if(selection >= 1 && selection <= 5)
-                    goodInput = true;
-                else
-                    selectStr = JOptionPane.showInputDialog(null, "Invalid card number. Select a card to discard (1-5).");
-            }
-            catch (NumberFormatException nfe) {
-                selectStr = JOptionPane.showInputDialog(null, "Invalid input. Select a card to discard (1-5).");
-            }
-        } while (!goodInput);
-        JOptionPane.showMessageDialog(null, "You picked up the " + flipped);
-            hand[selection] = flipped;
+        //cpu overrides
     }
     
-    public void playCard(int selection, Card.Suit follow, HandInfo inf, 
-                            int leader, int numPlays) {
-        
-        
-        
+    public boolean goAlone(Card.Suit trump) {
+        String title = "Go alone?";
+        String message = "You called " + Card.suitNames[trump.ordinal()] +". Go alone?";
+        int selection;
+        selection = JOptionPane.showOptionDialog(null, message, title, 
+                                JOptionPane.YES_NO_OPTION, 0, null, null, null);
+        if(selection == JOptionPane.YES_OPTION)			
+            return true;
+        else
+            return false;
     }
     
-    private boolean isPlayable(int selection, Card.Suit follow, HandInfo inf, 
-                                int leader, int numPlays) {
+    public void resetCard(int index) {
+        hand[index].r = Card.Rank.NONE;
+        hand[index].s = Card.Suit.NONE;
+        hand[index].sameColor = Card.Suit.NONE;
+    }
+    
+    public int playCard(Card.Suit follow, HandInfo inf, int leader, int numPlays) {
+        //cpu overrides
+        return 0;
+    }
+    
+    public boolean isPlayable(int selection, Card.Suit follow, HandInfo inf) {
         if(hand[selection].s == Card.Suit.NONE)
             return false;
+        else if(follow == Card.Suit.NONE)
+            return true;
         
         boolean mustFollow = false;
         for(int i = 0; i < 5; ++i) {
@@ -173,6 +166,14 @@ public class Player {
                 return false;
     }
     
+    public void setUp1() {
+        handIndex = 0;
+    }
+    
+    public void setUp2(Card.Suit trump) {
+        //CPU overrides this
+    }
+    
     /**@return A string format of the player's hand*/
     public String toString() {
         String str =  name + "'s hand:\n";
@@ -180,5 +181,18 @@ public class Player {
             str = str + getCard(i).toString() + "\n";
         str += "\n";
         return str;
+    }
+    
+    public static int whosWinning(int leader, HandInfo inf, int numPlays) {
+        int curWinner = leader;
+        Card curWinnerC = new Card();
+        for(int i = (leader+1)%4; i != (leader+numPlays)%4; i=(i+1)%4) {
+            curWinnerC.set(inf.trickAr[curWinner]);
+            if(!(inf.alone && i == (inf.caller+2)%4))
+                if(i != leader)
+                    if(curWinnerC.isLessThan(inf.trickAr[i], inf.trump))
+                        curWinner = i;
+        }
+        return curWinner;
     }
 }
